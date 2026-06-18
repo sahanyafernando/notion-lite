@@ -19,7 +19,9 @@ export function SearchBar({ workspaceId }: SearchBarProps) {
 
   useEffect(() => {
     if (!query.trim()) {
-      setResults([]);
+      startTransition(() => {
+        setResults([]);
+      });
       return;
     }
 
@@ -31,7 +33,7 @@ export function SearchBar({ workspaceId }: SearchBarProps) {
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [query, workspaceId]);
+  }, [query, workspaceId, startTransition]);
 
   return (
     <div className="relative">

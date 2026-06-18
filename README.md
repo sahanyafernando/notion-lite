@@ -108,6 +108,40 @@ npm run dev
 | `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | `/dashboard` (keep as-is) |
 | `OPENAI_API_KEY` | Required for AI summarize feature |
 
+## Deploying to Vercel
+
+1. Create a Vercel account and connect your GitHub repository.
+2. Add these environment variables in Vercel:
+   - `DATABASE_URL`
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+   - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` = `/sign-in`
+   - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` = `/sign-up`
+   - `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` = `/dashboard`
+   - `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` = `/dashboard`
+   - `OPENAI_API_KEY` (optional, for AI summaries)
+3. If you are using a production domain, add it in Clerk under **Configure → Domains**.
+4. Deploy the site from Vercel. The default build command is:
+
+```bash
+npm run build
+```
+
+5. Optionally, deploy from the CLI:
+
+```bash
+npx vercel --prod
+```
+
+### GitHub Actions deploy
+
+This repo includes a deploy workflow in `.github/workflows/deploy.yml`.
+Set these GitHub Secrets if you want automatic Vercel deploys on push to `main` or `master`:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
 ## API Routes
 
 | Method | Route | Description |

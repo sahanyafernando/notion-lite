@@ -16,9 +16,10 @@ export default async function PageDetail({
   const canView = await canViewPage(user.id, id);
   if (!canView) notFound();
 
-  const [page, pages] = await Promise.all([getPage(id), getWorkspacePages(id)]);
-
+  const page = await getPage(id);
   if (!page) notFound();
+
+  const pages = await getWorkspacePages(page.workspaceId);
 
   const canEdit = await canEditPage(user.id, id);
   const access = await getWorkspaceAccess(user.id, page.workspaceId);
