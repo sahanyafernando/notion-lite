@@ -95,15 +95,17 @@ export function PageView({ page, pages, canEdit, canManage }: PageViewProps) {
               shares={page.sharePermissions}
               canManage={canEdit}
             />
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleSummarize}
-              disabled={isPending}
-            >
-              <Sparkles className="h-4 w-4" />
-              Summarize
-            </Button>
+            {canEdit && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleSummarize}
+                disabled={isPending}
+              >
+                <Sparkles className="h-4 w-4" />
+                Summarize
+              </Button>
+            )}
           </>
         }
       />

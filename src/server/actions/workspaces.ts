@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { requireDbUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
-  canEditWorkspace,
   canViewWorkspace,
   roleCanManageWorkspace,
 } from "@/lib/permissions";
@@ -58,7 +57,7 @@ export async function createWorkspace(name: string) {
 export async function getUserWorkspaces() {
   const user = await requireDbUser();
 
-  return prisma.workspace.findMany({
+  const workspaces = await prisma.workspace.findMany({
     where: {
       OR: [
         { ownerId: user.id },
@@ -76,6 +75,11 @@ export async function getUserWorkspaces() {
     },
     orderBy: { updatedAt: "desc" },
   });
+
+  return workspaces.map((workspace) => ({
+    ...workspace,
+    canDelete: workspace.ownerId === user.id,
+  }));
 }
 
 export async function getWorkspace(workspaceId: string) {

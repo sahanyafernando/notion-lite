@@ -12,6 +12,7 @@ type Workspace = {
   id: string;
   name: string;
   _count: { pages: number };
+  canDelete: boolean;
 };
 
 type DashboardClientProps = {
@@ -42,9 +43,18 @@ export function DashboardClient({ workspaces }: DashboardClientProps) {
   const handleDelete = (workspaceId: string) => {
     if (!confirm("Delete this workspace and all pages?")) return;
 
+    setError(null);
     startTransition(async () => {
-      await deleteWorkspace(workspaceId);
-      window.location.reload();
+      try {
+        await deleteWorkspace(workspaceId);
+        window.location.reload();
+      } catch (deleteError) {
+        setError(
+          deleteError instanceof Error
+            ? deleteError.message
+            : "Failed to delete workspace",
+        );
+      }
     });
   };
 
@@ -90,15 +100,17 @@ export function DashboardClient({ workspaces }: DashboardClientProps) {
                     {workspace._count.pages === 1 ? "" : "s"}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(workspace.id)}
-                  disabled={isPending}
-                  aria-label="Delete workspace"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                {workspace.canDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(workspace.id)}
+                    disabled={isPending}
+                    aria-label="Delete workspace"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
 
               <Button asChild className="mt-4 w-full" variant="secondary">

@@ -23,7 +23,7 @@ A production-style mini Notion clone built with Next.js, TypeScript, PostgreSQL,
 - **UI:** Tailwind CSS + shadcn-style components
 - **Editor:** TipTap
 - **AI:** OpenAI API
-- **Deploy:** Vercel + Supabase/Neon PostgreSQL
+- **Deploy:** Vercel + Neon PostgreSQL
 
 ## Database Diagram
 

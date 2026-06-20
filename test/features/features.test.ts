@@ -17,22 +17,54 @@ vi.mock("@/lib/permissions", () => ({
 vi.mock("@/lib/prisma", () => {
   const mockPrisma = {
     workspace: {
-      create: vi.fn(async (args: any) => ({ id: "ws-1", name: args.data.name })),
+      create: vi.fn(async (args: { data: { name: string } }) => ({
+        id: "ws-1",
+        name: args.data.name,
+      })),
       findMany: vi.fn(async () => []),
       findUnique: vi.fn(async () => null),
       delete: vi.fn(async () => ({})),
     },
     page: {
-      create: vi.fn(async (args: any) => ({ id: "page-1", title: args.data.title, workspaceId: args.data.workspaceId })),
+      create: vi.fn(
+        async (args: { data: { title: string; workspaceId: string } }) => ({
+          id: "page-1",
+          title: args.data.title,
+          workspaceId: args.data.workspaceId,
+        }),
+      ),
       findMany: vi.fn(async () => []),
-      findUnique: vi.fn(async (q: any) => ({ id: q.where.id, title: "Test", content: { type: "doc", content: [{ type: "paragraph", content: [{ text: "hello world" }] }] }, workspaceId: "ws-1" })),
-      update: vi.fn(async (args: any) => ({ id: args.where.id, ...args.data })),
+      findUnique: vi.fn(async (query: { where: { id: string } }) => ({
+        id: query.where.id,
+        title: "Test",
+        content: {
+          type: "doc",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "hello world" }],
+            },
+          ],
+        },
+        workspaceId: "ws-1",
+      })),
+      update: vi.fn(
+        async (args: {
+          where: { id: string };
+          data: Record<string, unknown>;
+        }) => ({ id: args.where.id, ...args.data }),
+      ),
       delete: vi.fn(async () => ({})),
       findFirst: vi.fn(async () => ({ id: "parent-1" })),
     },
     user: {
       findUnique: vi.fn(async () => ({ id: "user-2", email: "invitee@example.com" })),
-      upsert: vi.fn(async (args: any) => ({ id: "user-1", clerkId: "clerk-1", email: "test@example.com", name: "Test User" })),
+      upsert: vi.fn(async () => ({
+        id: "user-1",
+        clerkId: "clerk-1",
+        email: "test@example.com",
+        name: "Test User",
+      })),
     },
     tag: {
       upsert: vi.fn(async () => ({ id: "tag-1", name: "tag" })),
@@ -107,9 +139,10 @@ describe("Feature smoke tests with mocks", () => {
   it("generates an AI summary via API route", async () => {
     // Build a fake Request and params
     const req = new Request("http://localhost/api/pages/page-1/summarize", { method: "POST" });
-    const res = await summarizePOST(req, { params: Promise.resolve({ id: "page-1" }) } as any);
+    const res = await summarizePOST(req, {
+      params: Promise.resolve({ id: "page-1" }),
+    });
     const json = await res.json();
-    console.log('summarize route response:', json);
     expect(json).toHaveProperty("summary");
     expect(json.summary).toBe("Summary text");
     expect(mockPrisma.page.update).toHaveBeenCalled();

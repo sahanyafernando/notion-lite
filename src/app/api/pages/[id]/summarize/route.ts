@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 import { requireDbUser } from "@/lib/auth";
-import { canViewPage } from "@/lib/permissions";
+import { canEditPage } from "@/lib/permissions";
 import { extractTextFromTipTapContent } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 
@@ -13,8 +13,8 @@ export async function POST(
     const user = await requireDbUser();
     const { id } = await params;
 
-    const canView = await canViewPage(user.id, id);
-    if (!canView) {
+    const canEdit = await canEditPage(user.id, id);
+    if (!canEdit) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
